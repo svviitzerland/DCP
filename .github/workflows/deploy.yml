@@ -124,9 +124,24 @@ jobs:
       - name: Wait for deployment
         run: |
           echo "Waiting for App Runner service to be ready..."
-          aws apprunner wait service-running \
-            --service-arn $(aws apprunner list-services --region $AWS_REGION --query "ServiceSummaryList[?ServiceName=='$APP_RUNNER_SERVICE_NAME'].ServiceArn" --output text) \
-            --region $AWS_REGION
+          SERVICE_ARN=$(aws apprunner list-services --region $AWS_REGION --query "ServiceSummaryList[?ServiceName=='$APP_RUNNER_SERVICE_NAME'].ServiceArn" --output text)
+
+          # Poll until service is running
+          for i in {1..30}; do
+            STATUS=$(aws apprunner describe-service --service-arn $SERVICE_ARN --region $AWS_REGION --query 'Service.Status' --output text)
+            echo "Service status: $STATUS"
+
+            if [ "$STATUS" = "RUNNING" ]; then
+              echo "Service is running!"
+              break
+            elif [ "$STATUS" = "CREATE_FAILED" ] || [ "$STATUS" = "UPDATE_FAILED" ]; then
+              echo "Deployment failed with status: $STATUS"
+              exit 1
+            fi
+
+            echo "Waiting... (attempt $i/30)"
+            sleep 20
+          done
 
       - name: Get service URL
         run: |
