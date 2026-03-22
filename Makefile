@@ -1,4 +1,4 @@
-.PHONY: help install verify sync sync-library server clean test format lint
+.PHONY: help install verify sync sync-library server clean test format lint docker-build docker-run docker-stop deploy-railway deploy-render deploy-fly
 
 help:
 	@echo "DCP - Docs Context Provider"
@@ -12,6 +12,11 @@ help:
 	@echo "  make format         - Format code with black"
 	@echo "  make lint           - Lint code with ruff"
 	@echo "  make test           - Run tests"
+	@echo ""
+	@echo "Docker commands:"
+	@echo "  make docker-build   - Build Docker image"
+	@echo "  make docker-run     - Run with docker-compose"
+	@echo "  make docker-stop    - Stop docker-compose"
 
 install:
 	@echo "Installing dependencies..."
@@ -54,3 +59,45 @@ lint:
 test:
 	@echo "Running tests..."
 	uv run pytest -v
+
+# Docker commands
+docker-build:
+	@echo "Building Docker image..."
+	docker build -t dcp-server .
+
+docker-run:
+	@echo "Starting server with docker-compose..."
+	docker-compose up -d
+	@echo "Server running at http://localhost:8000"
+	@echo "View logs: docker-compose logs -f"
+
+docker-stop:
+	@echo "Stopping docker-compose..."
+	docker-compose down
+
+# Deployment commands
+deploy-railway:
+	@echo "Deploying to Railway..."
+	@echo "1. Push to GitHub: git push origin master"
+	@echo "2. Go to railway.app and connect your repo"
+	@echo "3. Add environment variables: QDRANT_URL, QDRANT_API_KEY"
+	@echo "Railway will auto-detect Dockerfile and deploy"
+
+deploy-render:
+	@echo "Deploying to Render..."
+	@echo "1. Push to GitHub: git push origin master"
+	@echo "2. Go to render.com and create new Web Service"
+	@echo "3. Connect your repo and select Docker runtime"
+	@echo "4. Add environment variables: QDRANT_URL, QDRANT_API_KEY"
+
+deploy-fly:
+	@echo "Deploying to Fly.io..."
+	@if ! command -v flyctl &> /dev/null; then \
+		echo "Installing flyctl..."; \
+		curl -L https://fly.io/install.sh | sh; \
+	fi
+	flyctl launch --name dcp-server --yes
+	@echo "Set secrets:"
+	@echo "  flyctl secrets set QDRANT_URL='your-url'"
+	@echo "  flyctl secrets set QDRANT_API_KEY='your-key'"
+	flyctl deploy

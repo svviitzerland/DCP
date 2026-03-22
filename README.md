@@ -187,31 +187,6 @@ Found a bug or have a feature request? [Open an issue](https://github.com/svvitz
 
 ---
 
-## Tech Stack
-
-- **Language**: Python 3.11+
-- **MCP Framework**: [FastMCP](https://github.com/jlowin/fastmcp)
-- **Scraping**: httpx + BeautifulSoup4
-- **Embedding**: [Fastembed](https://github.com/qdrant/fastembed) (BAAI/bge-small-en-v1.5, runs locally)
-- **CI/CD**: GitHub Actions
-- **Package Manager**: [uv](https://github.com/astral-sh/uv)
-
-**Total cost: $0** (all free tiers)
-
----
-
-## Roadmap
-
-- [ ] Support for GitHub `/docs` folder fetching
-- [ ] Web UI for browsing documentation
-- [ ] Support for versioned documentation
-- [ ] Incremental updates (only sync changed docs)
-- [ ] Support for private documentation sources
-- [ ] Docker image for easy deployment
-- [ ] Metrics and analytics dashboard
-
----
-
 ## License
 
 MIT License - see [LICENSE](LICENSE) file for details
