@@ -37,6 +37,9 @@ COPY providers ./providers
 # Expose port (FastMCP default is 8000)
 EXPOSE 8000
 
+# Add healthcheck endpoint support
+ENV PORT=8000
+
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD python -c "import httpx; httpx.get('http://localhost:8000/health', timeout=2)" || exit 1
