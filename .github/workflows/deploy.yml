@@ -8,8 +8,7 @@ on:
 
 env:
   AWS_REGION: ap-southeast-1
-  ECR_PUBLIC_REGISTRY: public.ecr.aws
-  ECR_PUBLIC_REPOSITORY: dcp
+  ECR_PUBLIC_REPOSITORY_URI: public.ecr.aws/v6g2d9b5/dcp
   APP_RUNNER_SERVICE_NAME: dcp-service
 
 permissions:
@@ -42,14 +41,14 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
         run: |
           # Build Docker image
-          docker build -t $ECR_PUBLIC_REGISTRY/$ECR_PUBLIC_REPOSITORY:$IMAGE_TAG .
-          docker tag $ECR_PUBLIC_REGISTRY/$ECR_PUBLIC_REPOSITORY:$IMAGE_TAG $ECR_PUBLIC_REGISTRY/$ECR_PUBLIC_REPOSITORY:latest
+          docker build -t $ECR_PUBLIC_REPOSITORY_URI:$IMAGE_TAG .
+          docker tag $ECR_PUBLIC_REPOSITORY_URI:$IMAGE_TAG $ECR_PUBLIC_REPOSITORY_URI:latest
 
           # Push image to ECR Public
-          docker push $ECR_PUBLIC_REGISTRY/$ECR_PUBLIC_REPOSITORY:$IMAGE_TAG
-          docker push $ECR_PUBLIC_REGISTRY/$ECR_PUBLIC_REPOSITORY:latest
+          docker push $ECR_PUBLIC_REPOSITORY_URI:$IMAGE_TAG
+          docker push $ECR_PUBLIC_REPOSITORY_URI:latest
 
-          echo "image=$ECR_PUBLIC_REGISTRY/$ECR_PUBLIC_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "image=$ECR_PUBLIC_REPOSITORY_URI:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       - name: Deploy to App Runner
         id: deploy-apprunner
