@@ -1,0 +1,30 @@
+{
+  "agno": {
+    "llms_txt": "https://agno.com/llms.txt",
+    "llms_full_txt": "https://agno.com/llms-full.txt",
+    "docs": "https://docs.agno.com",
+    "version": "latest",
+    "description": "AI agent framework by Agno"
+  },
+  "strands": {
+    "llms_txt": "https://strandsagents.com/llms.txt",
+    "llms_full_txt": null,
+    "docs": "https://strandsagents.com/docs",
+    "version": "latest",
+    "description": "Strands Agents SDK"
+  },
+  "supabase": {
+    "llms_txt": null,
+    "llms_full_txt": null,
+    "docs": "https://supabase.com/docs",
+    "version": "latest",
+    "description": "Open source Firebase alternative"
+  },
+  "fastapi": {
+    "llms_txt": null,
+    "llms_full_txt": null,
+    "docs": "https://fastapi.tiangolo.com",
+    "version": "latest",
+    "description": "Modern, fast web framework for building APIs with Python"
+  }
+}

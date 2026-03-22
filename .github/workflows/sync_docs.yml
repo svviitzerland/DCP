@@ -1,0 +1,86 @@
+name: Sync Documentation
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'providers/provider.json'
+  workflow_dispatch:
+    inputs:
+      library:
+        description: 'Specific library to sync (leave empty for all)'
+        required: false
+        type: string
+
+jobs:
+  sync-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Need previous commit to detect changes
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install dependencies
+        run: |
+          uv pip install --system -e .
+
+      - name: Detect changed libraries
+        id: detect-changes
+        if: github.event_name == 'push'
+        run: |
+          # Get changed libraries from provider.json
+          git diff HEAD~1 HEAD -- providers/provider.json > diff.txt
+
+          # Extract library names from diff (lines starting with + or - in JSON)
+          # This is a simple approach - in production you'd want more robust parsing
+          CHANGED_LIBS=$(cat diff.txt | grep -E '^\+\s+"[^"]+":' | sed 's/.*"\([^"]*\)".*/\1/' | tr '\n' ',' | sed 's/,$//')
+
+          if [ -z "$CHANGED_LIBS" ]; then
+            echo "No library changes detected, syncing all"
+            echo "sync_all=true" >> $GITHUB_OUTPUT
+          else
+            echo "Changed libraries: $CHANGED_LIBS"
+            echo "changed_libs=$CHANGED_LIBS" >> $GITHUB_OUTPUT
+            echo "sync_all=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Sync all libraries
+        if: |
+          github.event_name == 'workflow_dispatch' && github.event.inputs.library == '' ||
+          github.event_name == 'push' && steps.detect-changes.outputs.sync_all == 'true'
+        env:
+          QDRANT_URL: ${{ secrets.QDRANT_URL }}
+          QDRANT_API_KEY: ${{ secrets.QDRANT_API_KEY }}
+        run: |
+          python -m scraper.fetcher --sync-all
+
+      - name: Sync specific library (manual trigger)
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.library != ''
+        env:
+          QDRANT_URL: ${{ secrets.QDRANT_URL }}
+          QDRANT_API_KEY: ${{ secrets.QDRANT_API_KEY }}
+        run: |
+          python -m scraper.fetcher --library "${{ github.event.inputs.library }}"
+
+      - name: Sync changed libraries (auto trigger)
+        if: github.event_name == 'push' && steps.detect-changes.outputs.sync_all == 'false'
+        env:
+          QDRANT_URL: ${{ secrets.QDRANT_URL }}
+          QDRANT_API_KEY: ${{ secrets.QDRANT_API_KEY }}
+        run: |
+          IFS=',' read -ra LIBS <<< "${{ steps.detect-changes.outputs.changed_libs }}"
+          for lib in "${LIBS[@]}"; do
+            echo "Syncing $lib..."
+            python -m scraper.fetcher --library "$lib"
+          done
