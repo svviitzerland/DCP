@@ -1,6 +1,7 @@
 """FastMCP server for DCP - Main entry point."""
 
 import json
+import os
 from pathlib import Path
 from typing import List, Dict, Any
 from dotenv import load_dotenv
@@ -12,8 +13,12 @@ from scraper.embedder import DocumentEmbedder
 # Load environment variables
 load_dotenv()
 
-# Initialize FastMCP server
-mcp = FastMCP("DCP - Docs Context Provider")
+# Initialize FastMCP server with HTTP support
+mcp = FastMCP(
+    "DCP - Docs Context Provider",
+    host=os.getenv("HOST", "0.0.0.0"),
+    port=int(os.getenv("PORT", "8000"))
+)
 
 # Initialize database and embedder (lazy loading)
 _db = None
@@ -162,7 +167,9 @@ def search_all_docs(query: str, limit: int = 5) -> List[Dict[str, Any]]:
 
 def main():
     """Run the MCP server."""
-    mcp.run()
+    # Run in SSE mode for HTTP server (App Runner compatible)
+    transport = os.getenv("MCP_TRANSPORT", "sse")
+    mcp.run(transport=transport)
 
 
 if __name__ == "__main__":
