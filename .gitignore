@@ -51,3 +51,5 @@ htmlcov/
 
 # Qdrant local (if running locally)
 qdrant_storage/
+
+terraform
