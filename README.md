@@ -35,7 +35,7 @@ Add to `.cursor/mcp.json`:
   "mcpServers": {
     "dcp": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-everything", "https://dcp.farhanaulianda.my.id"]
+      "args": ["-y", "@modelcontextprotocol/server-everything", "https://dcp.farhanaulianda.my.id/mcp"]
     }
   }
 }
@@ -50,7 +50,7 @@ Add to `~/.claude/claude_desktop_config.json`:
   "mcpServers": {
     "dcp": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-everything", "https://dcp.farhanaulianda.my.id"]
+      "args": ["-y", "@modelcontextprotocol/server-everything", "https://dcp.farhanaulianda.my.id/mcp"]
     }
   }
 }
@@ -65,7 +65,7 @@ Add to `mcp_config.json`:
   "mcpServers": {
     "dcp": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-everything", "https://dcp.farhanaulianda.my.id"]
+      "args": ["-y", "@modelcontextprotocol/server-everything", "https://dcp.farhanaulianda.my.id/mcp"]
     }
   }
 }

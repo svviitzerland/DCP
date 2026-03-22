@@ -17,7 +17,8 @@ load_dotenv()
 mcp = FastMCP(
     "DCP - Docs Context Provider",
     host=os.getenv("HOST", "0.0.0.0"),
-    port=int(os.getenv("PORT", "8000"))
+    port=int(os.getenv("PORT", "8000")),
+    sse_path="/mcp"
 )
 
 # Initialize database and embedder (lazy loading)
